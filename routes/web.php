@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Redis;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -19,7 +21,10 @@ Route::get('/', function () {
 
 Route::group(['middleware' => 'auth'], function (){
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        $redis = Redis::connection('default');
+        $redis->incr('visitas', 1);
+        $total_visitas = $redis->get('visitas');
+        return view('dashboard', compact('total_visitas'));
     })->name('dashboard'); 
 });
 
